@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Admin - Pro codes</title>
+<style>body{margin:0;background:#0f1220;color:#eef0ff;font-family:system-ui,sans-serif;line-height:1.6}
+.w{max-width:520px;margin:0 auto;padding:20px 16px}label{display:block;margin:12px 0 4px;color:#9aa3c7;font-size:14px}
+input{width:100%;padding:11px;border-radius:10px;border:1px solid #2a3050;background:#0f1328;color:#eef0ff;font-size:16px}
+button{margin-top:16px;width:100%;padding:13px;border:0;border-radius:12px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#ff8a3d,#7c5cff);cursor:pointer}
+.o{margin-top:16px;background:#181c30;border:1px solid #2a3050;border-radius:12px;padding:14px;white-space:pre-wrap;word-break:break-all}.e{color:#ff8b8b}</style></head>
+<body><div class="w"><h2>🔑 Create a Pro code</h2>
+<p style="color:#9aa3c7;font-size:14px">Do not share this page's link. After a payment arrives, create a code here and send it to the customer on WhatsApp. The code stops working automatically after the chosen number of days.</p>
+<label>Admin key (ADMIN_KEY)</label><input id="k" type="password" autocomplete="off">
+<label>Customer name (letters/numbers, e.g. RAJ)</label><input id="n" placeholder="RAJ">
+<label>Valid for (days)</label><input id="d" type="number" value="30" min="1" max="400">
+<button onclick="mk()">Create code</button><div id="out"></div></div>
+<script>
+async function mk(){
+  const out=document.getElementById("out"); out.innerHTML="";
+  try{
+    const r=await fetch("/api/admincode",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({adminKey:k.value,name:n.value,days:d.value})});
+    const j=await r.json();
+    if(!r.ok){out.innerHTML='<p class="e">'+(j.error||"Something went wrong")+'</p>';return;}
+    const e=j.expires, nice=e.slice(6)+"-"+e.slice(4,6)+"-"+e.slice(0,4);
+    const msg="Your AI Sathi Pro code: "+j.code+"\nValid until "+nice+". On the website tap Get Pro, then enter the code.";
+    out.innerHTML='<div class="o"></div><button onclick="navigator.clipboard.writeText(document.querySelector(\'.o\').innerText);this.textContent=\'Copied ✅\'">📋 Copy message</button>';
+    out.querySelector(".o").innerText=msg;
+  }catch(x){out.innerHTML='<p class="e">Network or server problem.</p>';}
+}
+</script></body></html>

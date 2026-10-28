@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Sathi - AI tools for creators and small businesses</title>
+<meta name="description" content="Dialogues, video scripts, shop ads, resumes, study notes, voiceovers, AI images and videos - all in one place. Works in English, Hindi and Hinglish.">
+<style>
+:root{--bg:#0f1220;--card:#181c30;--line:#2a3050;--txt:#eef0ff;--mut:#9aa3c7;--acc:#ff8a3d;--acc2:#7c5cff;--ok:#2ecc8f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;line-height:1.55}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+header{padding:28px 0 10px;text-align:center}
+h1{margin:0;font-size:30px}
+h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);margin:6px 0 0}
+.bar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:16px 0;font-size:14px;align-items:center}
+.pill{background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:99px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:6px 0 10px;scrollbar-width:thin}
+.tab{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--txt);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:15px}
+.tab.on{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:10px 0}
+label{display:block;font-size:14px;color:var(--mut);margin:12px 0 4px}
+input,select,textarea{width:100%;background:#0f1328;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px;font-size:16px;font-family:inherit}
+input[type=checkbox]{width:auto}
+textarea{min-height:110px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+button.go{margin-top:16px;width:100%;border:0;border-radius:12px;padding:14px;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));cursor:pointer}
+button.go:disabled{opacity:.6;cursor:wait}
+button.sm{background:#0f1328;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;font-size:14px}
+button.sm:disabled{opacity:.6;cursor:wait}
+a.sm{display:inline-block;text-decoration:none;color:var(--txt);background:#0f1328;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px}
+.out{white-space:pre-wrap;background:#0f1328;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px;font-size:16px}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.hint{color:var(--mut);font-size:13px}
+.err{color:#ff8b8b}
+.good{color:var(--ok)}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:10px}
+.plan{border:1px solid var(--line);border-radius:14px;padding:16px;background:#12162b}
+.plan.pro{border-color:var(--acc)}
+.price{font-size:28px;font-weight:800}
+.plan ul{padding-left:18px;color:var(--mut);margin:8px 0}
+footer{color:var(--mut);font-size:13px;text-align:center;padding:24px 0 40px}
+footer a{color:var(--mut)}
+.hidden{display:none !important}
+.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+.modal .card{max-width:440px;width:100%}
+video,audio{width:100%;border-radius:12px;margin-top:12px;background:#000}
+video{max-height:70vh}
+.prog{height:8px;background:#0f1328;border-radius:99px;overflow:hidden;margin-top:12px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .2s}
+.chk{display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--txt);font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🤖 <span>AI Sathi</span></h1>
+  <p class="sub">Images, videos, voiceovers and dialogues - all in one place</p>
+  <div class="bar">
+    <span class="pill" id="planPill">Free plan</span>
+    <span class="pill">Free text tools left today: <b id="left">3</b></span>
+    <button class="sm" onclick="openPro()">⭐ Get Pro</button>
+  </div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+<div class="card" id="panel"></div>
+
+<div class="card" id="pricing">
+  <h2 style="margin-top:0">💳 Plans</h2>
+  <div class="plans">
+    <div class="plan"><b>Free</b><div class="price">₹0</div>
+      <ul>
+        <li>3 text tools per day (dialogue, script, ads, resume, notes)</li>
+        <li>3 HD voiceovers per day</li>
+        <li>1 video per day (up to 30 sec, "AI Sathi" watermark)</li>
+        <li>2 AI images per day (watermarked)</li>
+        <li>Phone voice: unlimited</li>
+      </ul></div>
+    <div class="plan pro"><b>Pro - monthly</b><div class="price">₹99<small style="font-size:14px;color:var(--mut)">/month</small></div>
+      <ul>
+        <li>100 text tools per day</li>
+        <li>40 HD voiceovers per day</li>
+        <li>20 AI images per day, no watermark</li>
+        <li>10 videos per day, up to 90 sec, no watermark</li>
+        <li>First access when real AI video clips launch</li>
+      </ul>
+      <button class="go" style="margin:0" onclick="openPro()">How to get Pro</button></div>
+  </div>
+</div>
+
+<footer>AI-generated content can be wrong - please review it before using. Never enter Aadhaar, PAN, bank or card details.<br>
+<a href="terms.html">Terms of use</a> · <a href="privacy.html">Privacy policy</a> · © AI Sathi</footer>
+</div>
+
+<div class="modal hidden" id="proModal" onclick="if(event.target===this)closePro()">
+  <div class="card">
+    <h3 style="margin-top:0">⭐ How to get Pro</h3>
+    <ol style="padding-left:18px">
+      <li>Send ₹99 to this UPI ID: <b id="upiShow"></b></li>
+      <li>Send a screenshot of the payment on WhatsApp: <a id="waLink" style="color:var(--ok)" target="_blank" rel="noopener">Open WhatsApp</a></li>
+      <li>We'll send you a <b>Pro code</b> (usually within a few hours)</li>
+      <li>Enter the code below:</li>
+    </ol>
+    <input id="codeIn" placeholder="Your Pro code" autocomplete="off">
+    <div class="acts"><button class="sm" onclick="saveCode()">Apply code</button><button class="sm" onclick="closePro()">Close</button></div>
+    <p class="hint" id="codeMsg"></p>
+  </div>
+</div>
+
+<script>
+// ====== CHANGE YOUR DETAILS HERE ======
+const CONFIG = {
+  UPI_ID: "yourname@upi",        // your UPI ID
+  WHATSAPP: "919999999999",       // with country code, without +
+  PRO_PRICE: 99
+};
+// ======================================
+
+const SS = window.speechSynthesis || null;   // missing in some in-app browsers/webviews
+const LANG_OPTS = ["English","Hindi","Hinglish"];
+const TOOLS = [
+  {id:"dialogue", icon:"💬", name:"Dialogue", req:"topic", fields:[
+    {k:"topic", l:"Situation / topic", t:"textarea", ph:"e.g. Two friends at a tea stall talking about how to quit phone addiction"},
+    {k:"chars", l:"Characters", t:"text", ph:"e.g. Rahul and Seema"},
+    {row:[{k:"tone", l:"Tone", t:"select", o:["Funny","Emotional","Informative","Suspense","Motivational"]},{k:"lines", l:"Lines", t:"select", o:["8","10","14","20"]}]},
+    {k:"lang", l:"Output language", t:"select", o:LANG_OPTS}
+  ]},
+  {id:"script", icon:"🎬", name:"Video script", req:"topic", fields:[
+    {k:"topic", l:"Video topic", t:"text", ph:"e.g. Benefits of waking up early"},
+    {k:"platform", l:"Platform", t:"select", o:["YouTube Shorts","Instagram Reels","Long YouTube video"]},
+    {row:[{k:"duration", l:"Length (seconds)", t:"select", o:["30","45","60","90"]},{k:"tone", l:"Tone", t:"select", o:["Funny","Informative","Inspirational","Storytelling"]}]},
+    {k:"lang", l:"Output language", t:"select", o:LANG_OPTS}
+  ]},
+  {id:"shop", icon:"🏪", name:"Shop ads", req:"shopName", fields:[
+    {k:"shopName", l:"Shop name", t:"text", ph:"e.g. Sharma Cloth House"},
+    {k:"shopType", l:"Type of shop", t:"text", ph:"e.g. clothes, grocery, mobiles"},
+    {k:"offer", l:"Offer", t:"text", ph:"e.g. 20% off this Diwali"},
+    {row:[{k:"occasion", l:"Occasion", t:"select", o:["Diwali","Wedding season","Holi","Eid","New Year","Everyday sale"]},{k:"lang", l:"Output language", t:"select", o:LANG_OPTS}]}
+  ]},
+  {id:"resume", icon:"📄", name:"Resume / cover letter", req:"name", fields:[
+    {row:[{k:"mode", l:"What to create?", t:"select", o:["Resume","Cover letter"]},{k:"lang", l:"Output language", t:"select", o:["English","Hindi"]}]},
+    {k:"name", l:"Your name", t:"text"},
+    {k:"education", l:"Education", t:"text", ph:"e.g. 12th pass, B.A."},
+    {k:"skills", l:"Skills", t:"text", ph:"e.g. computer, typing, communication"},
+    {k:"experience", l:"Experience (if any)", t:"textarea"},
+    {k:"jobType", l:"What job do you want?", t:"text", ph:"e.g. office assistant"}
+  ]},
+  {id:"notes", icon:"📚", name:"Notes + quiz", req:"text", fields:[
+    {k:"text", l:"Paste the chapter text here", t:"textarea"},
+    {row:[{k:"count", l:"How many MCQs?", t:"select", o:["5","10"]},{k:"lang", l:"Output language", t:"select", o:LANG_OPTS}]}
+  ]},
+  {id:"voice", icon:"🔊", name:"Voiceover", special:true},
+  {id:"video", icon:"🎥", name:"Video", special:true},
+  {id:"image", icon:"🖼️", name:"Image", special:true}
+];
+
+const VOICES = [["Kore","Voice 1 (Kore)"],["Puck","Voice 2 (Puck)"],["Zephyr","Voice 3 (Zephyr)"],["Charon","Voice 4 (Charon)"],["Fenrir","Voice 5 (Fenrir)"]];
+const THEMES = {"Golden":["#ff8a3d","#7c2d12"],"Blue":["#2563eb","#0b1b4d"],"Green":["#10b981","#064e3b"],"Purple":["#a855f7","#3b0764"],"Pink":["#ec4899","#500724"]};
+
+let cur = TOOLS[0].id, busy = false, lastOutput = "";
+let bgImage = null;                 // background image for the video
+let imgState = {img:null, plan:"free"};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const get = (k, d) => { try { return localStorage.getItem(k) ?? d } catch { return d } };
+const set = (k, v) => { try { localStorage.setItem(k, v) } catch {} };
+const flat = fs => fs.flatMap(f => f.row ? f.row : [f]);
+const b64Bytes = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+const post = (url, body) => fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({...body, proCode: get("proCode","")})});
+const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+function coverDraw(ctx, img, W, H, zoom, px, py){
+  const sc = Math.max(W / img.width, H / img.height) * zoom, dw = img.width * sc, dh = img.height * sc;
+  ctx.drawImage(img, (W - dw) / 2 + px, (H - dh) / 2 + py, dw, dh);
+}
+
+function fieldHTML(f){
+  if(f.row) return `<div class="row">${f.row.map(fieldHTML).join("")}</div>`;
+  const id = "f_" + f.k;
+  let c;
+  if(f.t === "select") c = `<select id="${id}">${f.o.map(o=>`<option>${esc(o)}</option>`).join("")}</select>`;
+  else if(f.t === "textarea") c = `<textarea id="${id}" placeholder="${esc(f.ph||"")}"></textarea>`;
+  else c = `<input id="${id}" placeholder="${esc(f.ph||"")}">`;
+  return `<div><label for="${id}">${esc(f.l)}</label>${c}</div>`;
+}
+
+function render(){
+  try{ SS && SS.cancel(); }catch{}
+  $("#tabs").innerHTML = TOOLS.map(t=>`<button class="tab ${t.id===cur?"on":""}" onclick="pick('${t.id}')">${t.icon} ${t.name}</button>`).join("");
+  const t = TOOLS.find(x=>x.id===cur);
+  if(t.id === "voice") return renderVoice(t);
+  if(t.id === "video") return renderVideo(t);
+  if(t.id === "image") return renderImage(t);
+  $("#panel").innerHTML = `
+    <h2 style="margin-top:0">${t.icon} ${t.name}</h2>
+    ${t.fields.map(fieldHTML).join("")}
+    <button class="go" id="goBtn" onclick="run()">✨ Generate</button>
+    <div id="result"></div>`;
+}
+function pick(id){ cur = id; render(); }
+
+function updatePill(plan, left){
+  $("#planPill").textContent = plan === "pro" ? "⭐ Pro plan" : "Free plan";
+  if(left !== undefined) $("#left").textContent = left;
+}
+const limitMsg = (what) => `<div class="out">You've used today's free ${what}. Come back tomorrow, or get ⭐ Pro for higher daily limits.</div><div class="acts"><button class="sm" onclick="openPro()">⭐ Get Pro</button></div>`;
+
+// ---------- Text tools ----------
+async function run(){
+  if(busy) return;
+  const t = TOOLS.find(x=>x.id===cur);
+  const input = {};
+  for(const f of flat(t.fields)) input[f.k] = $("#f_"+f.k).value.trim();
+  if(!input[t.req]){ const f = flat(t.fields).find(x=>x.k===t.req); $("#result").innerHTML = `<p class="err">Please fill in "${esc(f.l)}".</p>`; return; }
+  busy = true; $("#goBtn").disabled = true; $("#goBtn").textContent = "Generating…";
+  $("#result").innerHTML = "";
+  try{
+    const r = await post("/api/generate", {tool: cur, input});
+    const d = await r.json();
+    if(r.status === 429){
+      $("#result").innerHTML = limitMsg("text tools");
+      updatePill(d.plan, 0);
+    } else if(!r.ok){
+      $("#result").innerHTML = `<p class="err">${esc(d.error || "Something went wrong")}</p>`;
+    } else {
+      $("#result").innerHTML = `<div class="out" id="outText">${esc(d.text)}</div>
+        <div class="acts"><button class="sm" onclick="copyOut()">📋 Copy</button><button class="sm" onclick="sendTo('voice')">🔊 Listen</button><button class="sm" onclick="sendTo('video')">🎥 Make video</button><button class="sm" onclick="waShare()">Share on WhatsApp</button></div>`;
+      updatePill(d.plan, d.left);
+    }
+  }catch(e){
+    $("#result").innerHTML = `<p class="err">Network or server problem. Please try again.</p>`;
+  }
+  busy = false; const b = $("#goBtn"); if(b){ b.disabled = false; b.textContent = "✨ Generate"; }
+}
+function copyOut(){
+  const t = $("#outText").innerText;
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>alert("Copied ✅"), ()=>alert("Could not copy. Please select the text and copy it manually."));
+  else alert("Copy is not supported here. Please select the text and copy it manually.");
+}
+function waShare(){ window.open("https://wa.me/?text=" + encodeURIComponent($("#outText").innerText), "_blank"); }
+function sendTo(id){
+  const full = $("#outText").innerText, m = /FULL SPOKEN TEXT:?\s*/i.exec(full);
+  lastOutput = m ? full.slice(m.index + m[0].length).trim() : full;   // scripts: use only the spoken part
+  pick(id); const ta = $(id === "voice" ? "#vtext" : "#vidtext"); if(ta) ta.value = lastOutput;
+}
+
+// ---------- Voiceover ----------
+function renderVoice(t){
+  $("#panel").innerHTML = `
+    <h2 style="margin-top:0">${t.icon} ${t.name}</h2>
+    <label for="vtext">Text to speak</label>
+    <textarea id="vtext" placeholder="Type or paste your text here (English or Hindi), or send the result of another tool"></textarea>
+    <p class="hint">Keep only the spoken text (remove scene numbers, hashtags and brackets). For dialogues, remove speaker names like "Rahul:" for a cleaner read.</p>
+    <h3 style="margin-bottom:0">🎙️ HD voice (Gemini)</h3>
+    <label for="vvoice">Choose a voice</label>
+    <select id="vvoice">${VOICES.map(v=>`<option value="${v[0]}">${v[1]}</option>`).join("")}</select>
+    <div class="acts"><button class="sm" id="hdBtn" onclick="hdSpeak()">▶ Generate HD voice</button></div>
+    <p class="hint">Free: 3 per day. Pro: 40 per day. Up to 450 characters per request (Free) or 700 (Pro).</p>
+    <div id="hdOut"></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+    <h3 style="margin-top:0">📱 Phone voice (free, unlimited)</h3>
+    <div class="row">
+      <div><label for="blang">Language</label><select id="blang" onchange="loadVoices()"><option value="en">English</option><option value="hi">Hindi</option></select></div>
+      <div><label for="bvoice">Voice</label><select id="bvoice"></select></div>
+    </div>
+    <label for="vrate">Speed</label><select id="vrate"><option value="0.8">Slow</option><option value="1" selected>Normal</option><option value="1.2">Fast</option></select>
+    <div class="acts"><button class="sm" onclick="speak()">▶ Play</button><button class="sm" onclick="SS &amp;&amp; SS.cancel()">⏹ Stop</button></div>
+    <p class="hint" id="vmsg"></p>`;
+  loadVoices();
+}
+function loadVoices(){
+  const fill = () => {
+    const sel = $("#bvoice"), lg = $("#blang"); if(!sel || !lg) return;
+    const vs = (SS ? SS.getVoices() : []).filter(v => v.lang.toLowerCase().startsWith(lg.value));
+    sel.innerHTML = vs.length ? vs.map(v=>`<option value="${esc(v.name)}">${esc(v.name)}</option>`).join("") : `<option value="">Default</option>`;
+    $("#vmsg").textContent = !SS ? "Phone voice is not supported in this browser. Open the website in Chrome." : vs.length ? "" : "No voice found for this language on your device. On Android, install the language in Google Text-to-Speech settings.";
+  };
+  fill(); if(SS) SS.onvoiceschanged = fill;
+}
+function speak(){
+  const txt = $("#vtext").value.trim(); if(!txt) return;
+  if(!SS){ $("#vmsg").textContent = "Phone voice is not supported in this browser. Open the website in Chrome."; return; }
+  SS.cancel();
+  const u = new SpeechSynthesisUtterance(txt);
+  u.lang = $("#blang").value === "hi" ? "hi-IN" : "en-IN"; u.rate = parseFloat($("#vrate").value);
+  const v = SS.getVoices().find(x => x.name === $("#bvoice").value); if(v) u.voice = v;
+  SS.speak(u);
+}
+async function hdSpeak(){
+  const txt = $("#vtext").value.trim(); if(!txt) return;
+  const btn = $("#hdBtn"), out = $("#hdOut");
+  btn.disabled = true; out.innerHTML = `<p class="hint">Generating voice…</p>`;
+  try{
+    const r = await post("/api/tts", {text: txt, voice: $("#vvoice").value, kind: "voice"});
+    const d = await r.json().catch(()=>({}));
+    if(r.status === 429) out.innerHTML = limitMsg("HD voiceovers");
+    else if(!r.ok) out.innerHTML = `<p class="err">${esc(d.error || "Could not generate the HD voice.")} Try the phone voice below.</p>`;
+    else {
+      const url = URL.createObjectURL(new Blob([b64Bytes(d.audio)], {type:"audio/wav"}));
+      out.innerHTML = `<audio controls autoplay src="${url}"></audio><div class="acts"><a class="sm" download="ai-sathi-voice.wav" href="${url}">⬇ Download</a></div>`;
+      updatePill(d.plan);
+    }
+  }catch(e){ out.innerHTML = `<p class="err">Network or server problem.</p>`; }
+  btn.disabled = false;
+}
+
+// ---------- Video ----------
+function renderVideo(t){
+  $("#panel").innerHTML = `
+    <h2 style="margin-top:0">${t.icon} ${t.name} - script to video</h2>
+    <p class="hint">Each sentence of your script becomes a scene with animated text and a voiceover. The video is made on your own device. Keep this tab open while it renders.</p>
+    <label for="vidtext">Script (spoken text)</label>
+    <textarea id="vidtext" style="min-height:150px" placeholder="Each sentence becomes a scene. Remove scene numbers and hashtags."></textarea>
+    <div class="row">
+      <div><label for="vidAspect">Format</label><select id="vidAspect"><option value="v">Vertical 9:16 (Reels/Shorts)</option><option value="h">Horizontal 16:9 (YouTube)</option></select></div>
+      <div><label for="vidTheme">Color</label><select id="vidTheme">${Object.keys(THEMES).map(k=>`<option>${k}</option>`).join("")}</select></div>
+    </div>
+    <label for="vidBgFile">Background image (optional: your own photo, or an image from the 🖼️ Image tab)</label>
+    <input type="file" id="vidBgFile" accept="image/*" onchange="onBgFile(this)">
+    <div class="acts"><span class="hint" id="vidBgStatus"></span><button class="sm" onclick="clearBg()">Remove</button></div>
+    <label class="chk"><input type="checkbox" id="vidVoice" checked> Add voiceover (HD)</label>
+    <label for="vidVoiceName">Voice</label>
+    <select id="vidVoiceName">${VOICES.map(v=>`<option value="${v[0]}">${v[1]}</option>`).join("")}</select>
+    <button class="go" id="vidBtn" onclick="makeVideo()">🎥 Make video</button>
+    <p class="hint">Free: 1 video per day, up to 30 seconds, with watermark. Pro: 10 per day, up to 90 seconds, no watermark.</p>
+    <div class="prog hidden" id="vidProg"><i></i></div>
+    <div id="vidMsg" class="hint"></div>
+    <div id="vidOut"></div>`;
+  updateBgStatus();
+}
+function updateBgStatus(){ const e = $("#vidBgStatus"); if(e) e.textContent = bgImage ? "✅ Background image selected" : "No image (colored background)"; }
+async function onBgFile(inp){
+  const f = inp.files && inp.files[0]; if(!f) return;
+  try{ bgImage = await loadImg(URL.createObjectURL(f)); }catch{ bgImage = null; }
+  updateBgStatus();
+}
+function clearBg(){ bgImage = null; const f = $("#vidBgFile"); if(f) f.value = ""; updateBgStatus(); }
+
+function splitScenes(text){
+  const cleaned = text.replace(/[*_#`>]+/g," ").replace(/\([^)]*\)|\[[^\]]*\]/g," ")
+    .replace(/^\s*\d+[.)]\s*/gm,"").replace(/^[^\n:：]{1,25}[:：]\s*/gm,"");
+  const parts = cleaned.split(/(?<=[।.!?])\s+|\n+/).map(s=>s.replace(/\s+/g," ").trim()).filter(Boolean);
+  const scenes = []; let buf = "";
+  for(const p of parts){
+    if(buf && (buf + " " + p).length > 85){ scenes.push(buf); buf = p; } else buf = buf ? buf + " " + p : p;
+  }
+  if(buf) scenes.push(buf);
+  return scenes;
+}
+function chunkText(scenes, max){
+  const out = []; let buf = "";
+  for(const s of scenes){
+    if(buf && (buf + " " + s).length > max){ out.push(buf); buf = s; } else buf = buf ? buf + " " + s : s;
+  }
+  if(buf) out.push(buf);
+  return out;
+}
+function wrapLines(ctx, text, maxW){
+  const words = text.split(" "), lines = []; let line = "";
+  for(const w of words){
+    const test = line ? line + " " + w : w;
+    if(ctx.measureText(test).width > maxW && line){ lines.push(line); line = w; } else line = test;
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+const FONT = f => `700 ${f}px "Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans Devanagari","Mangal","Nirmala UI","Lohit Devanagari",sans-serif`;
+
+function prepScenes(ctx, scenes, W, H){
+  for(const sc of scenes){
+    let fs = Math.round(W * 0.085);
+    for(;;){
+      ctx.font = FONT(fs);
+      sc.lines = wrapLines(ctx, sc.text, W * 0.84);
+      if(sc.lines.length * fs * 1.4 <= H * 0.62 || fs <= 22) break;
+      fs -= 2;
+    }
+    sc.fs = fs;
+  }
+}
+function drawFrame(ctx, W, H, t, scenes, total, theme, wm, bg){
+  let i = 0; while(i < scenes.length - 1 && t >= scenes[i].end) i++;
+  const sc = scenes[i];
+  const p = Math.min(1, Math.max(0, (t - sc.start) / (sc.end - sc.start)));
+  if(bg){
+    const pr = Math.min(1, t / total);
+    coverDraw(ctx, bg, W, H, 1.06 + 0.1 * pr, (pr - 0.5) * W * 0.04, 0);
+    const sh = ctx.createLinearGradient(0, 0, 0, H);
+    sh.addColorStop(0, "rgba(0,0,0,.35)"); sh.addColorStop(0.5, "rgba(0,0,0,.5)"); sh.addColorStop(1, "rgba(0,0,0,.6)");
+    ctx.fillStyle = sh; ctx.fillRect(0, 0, W, H);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, W * (0.5 + 0.5 * Math.sin(t / 4)), H);
+    g.addColorStop(0, theme[0]); g.addColorStop(1, theme[1]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    for(let k = 0; k < 6; k++){
+      ctx.fillStyle = "rgba(255,255,255,0.07)"; ctx.beginPath();
+      ctx.arc(W * (0.5 + 0.45 * Math.sin(t * 0.3 + k * 1.7)), H * (0.5 + 0.45 * Math.cos(t * 0.25 + k * 2.3)), W * (0.1 + 0.05 * k), 0, 7); ctx.fill();
+    }
+  }
+  const alpha = Math.min(1, p * 8, (1 - p) * 8 + 0.0001);
+  const slide = (1 - Math.min(1, p * 6)) * 40, zoom = 1 + 0.05 * p;
+  ctx.save();
+  ctx.translate(W / 2, H / 2); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H / 2 + slide);
+  ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+  ctx.font = FONT(sc.fs); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const lh = sc.fs * 1.4, y0 = H / 2 - (sc.lines.length - 1) * lh / 2;
+  sc.lines.forEach((ln, n) => {
+    ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.fillText(ln, W / 2 + 3, y0 + n * lh + 4);
+    ctx.fillStyle = "#fff"; ctx.fillText(ln, W / 2, y0 + n * lh);
+  });
+  ctx.restore();
+  ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.fillRect(0, H - 10, W * Math.min(1, t / total), 10);
+  if(wm){
+    ctx.font = FONT(Math.round(W * 0.04)); ctx.textAlign = "right"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "rgba(255,255,255,.75)"; ctx.fillText("🤖 AI Sathi", W - 24, H - 34);
+  }
+}
+
+async function makeVideo(){
+  if(busy) return;
+  const raw = $("#vidtext").value.trim();
+  const msg = $("#vidMsg"), prog = $("#vidProg"), out = $("#vidOut"), btn = $("#vidBtn");
+  if(!raw){ msg.innerHTML = `<span class="err">Please write your script first.</span>`; return; }
+  if(typeof MediaRecorder === "undefined"){ msg.innerHTML = `<span class="err">Video creation isn't supported in this browser. Please use Chrome.</span>`; return; }
+  busy = true; btn.disabled = true; out.innerHTML = ""; msg.textContent = "Getting permission…";
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const actx = new AC(); actx.resume && actx.resume();   // must be created right after the click
+  const setProg = v => { prog.classList.remove("hidden"); prog.firstElementChild.style.width = Math.round(v*100) + "%"; };
+  try{
+    const pr = await post("/api/permit", {});
+    const permit = await pr.json().catch(()=>({}));
+    if(pr.status === 429){ out.innerHTML = limitMsg("videos"); updatePill(permit.plan); throw 0; }
+    if(!pr.ok) throw new Error(permit.error || "Permission denied");
+    updatePill(permit.plan);
+
+    let scenes = splitScenes(raw.slice(0, permit.maxChars * 2)).map(text => ({text}));
+    let used = 0; scenes = scenes.filter(s => (used += s.text.length) <= permit.maxChars);
+    if(!scenes.length) throw new Error("Your script is too short or too long.");
+
+    const vertical = $("#vidAspect").value === "v";
+    const W = vertical ? 720 : 1280, H = vertical ? 1280 : 720;
+    const canvas = document.createElement("canvas"); canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d");
+    prepScenes(ctx, scenes, W, H);
+
+    let abuf = null;
+    if($("#vidVoice").checked){
+      try{
+        const chunks = chunkText(scenes.map(s=>s.text), permit.chunkChars), bufs = [];
+        for(let i = 0; i < chunks.length; i++){
+          msg.textContent = `Generating voice (${i+1}/${chunks.length})…`; setProg(0.1 + 0.3 * i / chunks.length);
+          const r = await post("/api/tts", {text: chunks[i], voice: $("#vidVoiceName").value, kind: "vchunk"});
+          if(!r.ok) throw new Error("tts");
+          const d = await r.json();
+          bufs.push(await actx.decodeAudioData(b64Bytes(d.audio).buffer));
+        }
+        const len = bufs.reduce((a,b)=>a+b.length,0), sr = bufs[0].sampleRate;
+        abuf = actx.createBuffer(1, len, sr); let off = 0;
+        for(const b of bufs){ abuf.getChannelData(0).set(b.getChannelData(0), off); off += b.length; }
+      }catch(e){
+        abuf = null;
+        msg.innerHTML = `<span class="err">HD voice isn't available right now, so a silent video is being made (you can add a voice separately later).</span>`;
+      }
+    }
+
+    const chars = scenes.reduce((a,s)=>a+s.text.length,0);
+    let total = abuf ? abuf.duration + 0.6 : Math.max(5, chars / 12);
+    total = Math.min(total, permit.maxSeconds);
+    let tcur = 0;
+    for(const s of scenes){ s.start = tcur; tcur += total * s.text.length / chars; s.end = tcur; }
+
+    const theme = THEMES[$("#vidTheme").value] || THEMES["Golden"];
+    const stream = canvas.captureStream(30);
+    let src = null;
+    if(abuf){
+      const dest = actx.createMediaStreamDestination();
+      src = actx.createBufferSource(); src.buffer = abuf; src.connect(dest);
+      dest.stream.getAudioTracks().forEach(tr => stream.addTrack(tr));
+    }
+    const mimes = ["video/mp4;codecs=avc1,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+    const mime = mimes.find(m => MediaRecorder.isTypeSupported(m)) || "";
+    const rec = new MediaRecorder(stream, mime ? {mimeType: mime, videoBitsPerSecond: 2500000} : {});
+    const parts = [];
+    rec.ondataavailable = e => { if(e.data && e.data.size) parts.push(e.data); };
+    const done = new Promise(res => rec.onstop = res);
+
+    msg.textContent = "Rendering the video - keep this tab open…";
+    drawFrame(ctx, W, H, 0, scenes, total, theme, permit.watermark, bgImage);
+    rec.start(250); if(src) src.start();
+    const t0 = performance.now();
+    await new Promise(res => {
+      const tick = () => {
+        const t = (performance.now() - t0) / 1000;
+        drawFrame(ctx, W, H, Math.min(t, total - 0.001), scenes, total, theme, permit.watermark, bgImage);
+        setProg(0.4 + 0.6 * Math.min(1, t / total));
+        if(t < total + 0.3) requestAnimationFrame(tick); else res();
+      };
+      tick();
+    });
+    rec.stop(); await done;
+    const type = (rec.mimeType || mime || "video/webm").split(";")[0];
+    const blob = new Blob(parts, {type});
+    const url = URL.createObjectURL(blob), ext = type.includes("mp4") ? "mp4" : "webm";
+    setProg(1);
+    if(!msg.querySelector(".err")) msg.innerHTML = `<span class="good">Your video is ready ✅</span>`;
+    out.innerHTML = `<video controls playsinline src="${url}"></video>
+      <div class="acts"><a class="sm" download="ai-sathi-video.${ext}" href="${url}">⬇ Download (${ext.toUpperCase()})</a></div>
+      ${permit.watermark ? `<p class="hint">Get ⭐ Pro to remove the watermark.</p>` : ""}`;
+  }catch(e){
+    if(e){ msg.innerHTML = `<span class="err">${esc(e.message || "Could not make the video. Please try again.")}</span>`; }
+    else msg.textContent = "";
+  }
+  try{ actx.close(); }catch{}
+  busy = false; btn.disabled = false;
+}
+
+// ---------- Image ----------
+function renderImage(t){
+  $("#panel").innerHTML = `
+    <h2 style="margin-top:0">${t.icon} ${t.name} - create an image with AI</h2>
+    <p class="hint">Describe the picture you want, in English or Hindi. AI can't spell text correctly inside images, so add your text with the box below once the image is ready.</p>
+    <label for="imgPrompt">What image do you want?</label>
+    <textarea id="imgPrompt" placeholder="e.g. A cozy house decorated with diyas on Diwali night, warm golden light"></textarea>
+    <div class="row">
+      <div><label for="imgStyle">Style</label><select id="imgStyle"><option>Photorealistic</option><option>Cartoon</option><option>Poster</option><option>Thumbnail</option><option>Painting</option></select></div>
+      <div><label for="imgAspect">Size</label><select id="imgAspect" onchange="redrawImage()"><option value="s">Square 1:1</option><option value="v">Vertical 9:16</option><option value="h">Horizontal 16:9</option></select></div>
+    </div>
+    <button class="go" id="imgBtn" onclick="makeImage()">🖼️ Generate image</button>
+    <p class="hint">Free: 2 images per day, with watermark. Pro: 20 per day, no watermark. Images of real people, brands/characters or inappropriate content can't be created.</p>
+    <div id="imgMsg" class="hint"></div>
+    <div id="imgResult" class="hidden">
+      <canvas id="imgCanvas" style="width:100%;height:auto;border-radius:12px;margin-top:12px"></canvas>
+      <label for="imgText">Text on the image (optional)</label>
+      <input id="imgText" oninput="redrawImage()" placeholder="e.g. Happy Diwali">
+      <label for="imgPos">Text position</label>
+      <select id="imgPos" onchange="redrawImage()"><option value="b">Bottom</option><option value="m">Middle</option><option value="t">Top</option></select>
+      <div class="acts"><button class="sm" onclick="downloadImage()">⬇ Download</button><button class="sm" onclick="useAsBg()">🎥 Use as video background</button></div>
+    </div>`;
+  if(imgState.img){ $("#imgResult").classList.remove("hidden"); redrawImage(); }
+}
+function redrawImage(){
+  const st = imgState, c = $("#imgCanvas"); if(!st.img || !c) return;
+  const a = $("#imgAspect").value, W = a === "h" ? 1280 : a === "v" ? 720 : 1024, H = a === "h" ? 720 : a === "v" ? 1280 : 1024;
+  c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  coverDraw(ctx, st.img, W, H, 1, 0, 0);
+  const txt = $("#imgText").value.trim();
+  if(txt){
+    let fs = Math.round(W * 0.09), lines;
+    for(;;){ ctx.font = FONT(fs); lines = wrapLines(ctx, txt, W * 0.84); if(lines.length * fs * 1.35 <= H * 0.4 || fs <= 20) break; fs -= 2; }
+    const lh = fs * 1.35, bh = lines.length * lh + fs, pos = $("#imgPos").value;
+    const top = pos === "t" ? H * 0.06 : pos === "m" ? (H - bh) / 2 : H - bh - H * 0.06;
+    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(0, top, W, bh);
+    ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = FONT(fs);
+    lines.forEach((ln, n) => ctx.fillText(ln, W / 2, top + fs / 2 + lh * n + lh / 2));
+  }
+  if(st.plan !== "pro"){
+    ctx.font = FONT(Math.round(W * 0.04)); ctx.textAlign = "right"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.fillText("🤖 AI Sathi", W - 20, H - 20);
+  }
+}
+async function makeImage(){
+  if(busy) return;
+  const prompt = $("#imgPrompt").value.trim(), msg = $("#imgMsg"), btn = $("#imgBtn");
+  if(prompt.length < 3){ msg.innerHTML = `<span class="err">Please describe the image first.</span>`; return; }
+  busy = true; btn.disabled = true; btn.textContent = "Generating image…"; msg.textContent = "This can take 10-20 seconds…";
+  try{
+    const r = await post("/api/image", {prompt, style: $("#imgStyle").value});
+    const d = await r.json().catch(()=>({}));
+    if(r.status === 429){ msg.innerHTML = limitMsg("images"); updatePill(d.plan); }
+    else if(!r.ok){ msg.innerHTML = `<span class="err">${esc(d.error || "Could not generate the image.")}</span>`; }
+    else {
+      imgState = {img: await loadImg("data:image/jpeg;base64," + d.image), plan: d.plan};
+      $("#imgResult").classList.remove("hidden"); msg.innerHTML = `<span class="good">Image ready ✅</span>`;
+      redrawImage(); updatePill(d.plan);
+    }
+  }catch(e){ msg.innerHTML = `<span class="err">Network or server problem.</span>`; }
+  busy = false; btn.disabled = false; btn.textContent = "🖼️ Generate image";
+}
+function downloadImage(){
+  $("#imgCanvas").toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "ai-sathi-image.png"; a.click(); }, "image/png");
+}
+function useAsBg(){ if(!imgState.img) return; bgImage = imgState.img; pick("video"); }
+
+// ---------- Pro ----------
+function openPro(){
+  $("#upiShow").textContent = CONFIG.UPI_ID;
+  $("#waLink").href = "https://wa.me/" + CONFIG.WHATSAPP + "?text=" + encodeURIComponent("Hi, I've paid ₹" + CONFIG.PRO_PRICE + " for AI Sathi Pro. Screenshot attached.");
+  $("#codeIn").value = get("proCode","");
+  $("#proModal").classList.remove("hidden");
+}
+function closePro(){ $("#proModal").classList.add("hidden"); }
+function saveCode(){
+  const c = $("#codeIn").value.trim(); set("proCode", c);
+  $("#codeMsg").textContent = c ? "Code saved. Run any tool - Pro will show as active if the code is valid." : "Code removed.";
+  updatePill(c ? "pro" : "free");
+}
+
+render();
+if(get("proCode","")) updatePill("pro");
+</script>
+</body>
+</html>
